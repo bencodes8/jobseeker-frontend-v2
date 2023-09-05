@@ -1,95 +1,72 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import * as React from 'react';
+import { 
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Fade, 
+  Grid,
+  Paper, 
+  Typography,
+  Zoom
+} from '@mui/material';
 
-export default function Home() {
+const BACKEND = "http://127.0.0.1:8000/api";
+
+const Home = async () => {
+  const jobQueries = await getData();
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    <Box sx={{ display: 'flex', 
+              flexDirection: 'column', 
+              height: '100%' 
+            }}
+    >
+      <Box sx={{ textAlign: 'center', boxSizing: 'border-box', padding: 2 }}>
+        <Fade in timeout={2000}>
+          <Typography variant="h4">Welcome to Jobseeker</Typography>
+        </Fade>
+        <Fade in style={{ transitionDelay: '500ms' }} timeout={2000}>
+          <Typography variant="subtitle1" sx={{ marginTop: 1 }}>Seeking a job? Click on a card for a quick search.</Typography>
+        </Fade>
+      </Box>
+      <Grid container rowSpacing={1} sx={{ flexGrow: 1, marginTop: 1 }}>
+        {jobQueries.map((job) => (
+            <Grid item xs={4}>
+              <Zoom in>
+                <Card sx={{ maxWidth: 325, margin: 'auto' }}>
+                  <Paper elevation={4}>
+                    <CardActionArea>
+                      <CardMedia 
+                        component="img"
+                        height="150"
+                        image={`http://127.0.0.1:8000/${job.image}`}
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div" textAlign={'center'}>
+                          {job.title}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Paper>
+                </Card>
+              </Zoom>
+            </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
 }
+
+const getData = async () => {
+  const res = await fetch(`${BACKEND}/index`, { cache: 'force-cache' })
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.json();
+}
+
+export default Home;
