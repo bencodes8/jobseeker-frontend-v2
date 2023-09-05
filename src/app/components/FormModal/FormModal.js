@@ -12,7 +12,6 @@ import {
 import LoginFormContext from '@/app/context/loginFormContext';
 import LoginDialogContent from './LoginDialogContent';
 import RegisterDialogContent from './RegisterDialogContent';
-import { ButtonBox } from './ButtonBox';
 import CloseIcon from '@mui/icons-material/Close';
 
 const FormModal = ({ btnName, icon }) => {
