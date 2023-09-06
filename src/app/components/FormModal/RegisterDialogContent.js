@@ -10,15 +10,19 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import LoginFormContext from '@/app/context/loginFormContext';
-import { ButtonBox } from './ButtonBox';
-import { GroupIcon } from './GroupIcon';
-import { Form } from './Form';
+import AuthContext from '@/app/context/authcontext';
+import { ButtonBox } from './Emotion/ButtonBox';
+import { GroupIcon } from './Emotion/GroupIcon';
+import { Form } from './Emotion/Form';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 
 const RegisterDialogContent = () => {
-    const { setLoginForm } = React.useContext(LoginFormContext);
+    const { setLoginForm, 
+            usernameEmailValidationAPI, 
+            error,
+            setError 
+        } = React.useContext(AuthContext);
 
     const steps = ['Account Information', 'Name and Position'];
     const [step, setStep] = React.useState(0);
@@ -33,8 +37,16 @@ const RegisterDialogContent = () => {
         group: ''
     });
 
-    const handleNext = () => {
-        setStep(step + 1);
+    const handleNext = async () => {
+        // const isFormValid = document.querySelector('form').checkValidity();
+        // if (!isFormValid) {
+        //     return setError('Please fill all fields.');
+        // }
+        const valid = await usernameEmailValidationAPI(registerFields.username, registerFields.email);
+        console.log(valid);
+        // if (valid) {
+        //     setStep(step + 1);
+        // }
     }
 
     const handleSubmit = (e) => {
@@ -60,6 +72,8 @@ const RegisterDialogContent = () => {
                             label="Username"
                             value={registerFields.username}
                             onChange={(e) => setRegisterFields({...registerFields, username: e.target.value})}
+                            error={error.usernameField ? true : false}
+                            helperText={error.usernameField}
                             fullWidth
                             required
                         />
@@ -68,6 +82,8 @@ const RegisterDialogContent = () => {
                             type="email"
                             value={registerFields.email}
                             onChange={(e) => setRegisterFields({...registerFields, email: e.target.value})}
+                            error={error.emailField ? true : false}
+                            helperText={error.emailField}
                             fullWidth
                             required
                         />
@@ -131,6 +147,7 @@ const RegisterDialogContent = () => {
                     <Button onClick={() => {
                         if (step === 0) {
                             setLoginForm(true);
+                            setError({});
                         } else {
                             setStep(step - 1);
                         }

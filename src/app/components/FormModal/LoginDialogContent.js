@@ -5,12 +5,12 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import LoginFormContext from '@/app/context/loginFormContext';
-import { ButtonBox } from './ButtonBox';
-import { Form } from './Form';
+import AuthContext from '@/app/context/authcontext';
+import { ButtonBox } from './Emotion/ButtonBox';
+import { Form } from './Emotion/Form';
 
 const LoginDialogContent = () => {
-    const { setLoginForm } = React.useContext(LoginFormContext);
+    const { setLoginForm } = React.useContext(AuthContext);
     const [loginFields, setLoginFields] = React.useState({
         username: '',
         password: ''

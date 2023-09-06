@@ -32,9 +32,9 @@ const Home = async () => {
         </Fade>
       </Box>
       <Grid container rowSpacing={1} sx={{ flexGrow: 1, marginTop: 1 }}>
-        {jobQueries.map((job) => (
+        {jobQueries.map((job, index) => (
             <Grid item xs={4}>
-              <Zoom in>
+              <Zoom in style={{ transitionDelay: `${125 * (index + 1)}ms`}}>
                 <Card sx={{ maxWidth: 325, margin: 'auto' }}>
                   <Paper elevation={4}>
                     <CardActionArea>

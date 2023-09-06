@@ -9,14 +9,14 @@ import {
     Typography,
     IconButton
 } from '@mui/material';
-import LoginFormContext from '@/app/context/loginFormContext';
+import AuthContext from '@/app/context/authcontext';
 import LoginDialogContent from './LoginDialogContent';
 import RegisterDialogContent from './RegisterDialogContent';
 import CloseIcon from '@mui/icons-material/Close';
 
 const FormModal = ({ btnName, icon }) => {
     const [open, setOpen] = React.useState(false);
-    const { loginForm, setLoginForm } = React.useContext(LoginFormContext);
+    const { loginForm, setLoginForm } = React.useContext(AuthContext);
 
     const handleClickOpen = () => {
         setOpen(true);
