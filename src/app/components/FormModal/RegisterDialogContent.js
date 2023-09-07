@@ -3,7 +3,10 @@ import {
     Box,
     Button,
     DialogContentText,
-    IconButton,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Step,
     Stepper,
     StepLabel, 
@@ -12,45 +15,74 @@ import {
 } from '@mui/material';
 import AuthContext from '@/app/context/authcontext';
 import { ButtonBox } from './Emotion/ButtonBox';
-import { GroupIcon } from './Emotion/GroupIcon';
 import { Form } from './Emotion/Form';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PersonIcon from '@mui/icons-material/Person';
 
 const RegisterDialogContent = () => {
-    const { setLoginForm, 
-            usernameEmailValidationAPI, 
+    const { setLoginForm,
             error,
-            setError 
+            setError, 
+            usernameEmailValidationAPI, 
+            createUserAPI 
         } = React.useContext(AuthContext);
 
-    const steps = ['Account Information', 'Name and Position'];
+    const steps = ['Name and Position', 'Account Information'];
     const [step, setStep] = React.useState(0);
 
     const [registerFields, setRegisterFields] = React.useState({
+        firstName: '',
+        lastName: '',
+        group: '',
         username: '',
         email: '',
         password: '',
-        confirm: '',
-        firstName: '',
-        lastName: '',
-        group: ''
+        confirm: ''
     });
 
-    const handleNext = async () => {
-        // const isFormValid = document.querySelector('form').checkValidity();
-        // if (!isFormValid) {
-        //     return setError('Please fill all fields.');
-        // }
-        const valid = await usernameEmailValidationAPI(registerFields.username, registerFields.email);
-        console.log(valid);
-        // if (valid) {
-        //     setStep(step + 1);
-        // }
+    const handleSelect = (e) => {
+        setRegisterFields({...registerFields, group: e.target.value});
     }
 
-    const handleSubmit = (e) => {
+    const handleNext = async () => {
+        const { firstName, lastName, group } = registerFields;
+
+        if (!firstName) {
+            return setError({firstNameField: 'Please fill out this field.'});
+        }
+
+        if (!lastName) {
+            return setError({lastNameField: 'Please fill out this field.'});
+        }
+
+        if (!group) {
+            return setError({groupField: 'Please select a group.'})
+        }
+
+        setError({});
+        setStep(step + 1);
+        
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const { username, email, password, confirm, group } = registerFields;
+
+        // validate if username and email are available
+        const valid = await usernameEmailValidationAPI(username, email);
+
+        if (valid) {
+            if (password !== confirm) {
+                const pwdMatchErr = "Passwords do not match.";
+
+                return setError({
+                    passwordField: pwdMatchErr,
+                    confirmField: pwdMatchErr
+                });
+            }
+
+            // register new user
+            createUserAPI(username, email, password, group);
+        }
     }
 
     return (
@@ -67,6 +99,40 @@ const RegisterDialogContent = () => {
             <DialogContentText>Register Form</DialogContentText>
             <Form onSubmit={handleSubmit}>
                 { step === 0 ? (
+                    <>
+                        <TextField
+                            label="First Name"
+                            value={registerFields.firstName}
+                            onChange={(e) => setRegisterFields({...registerFields, firstName: e.target.value})}
+                            error={error.firstNameField ? true : false}
+                            helperText={error.firstNameField}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            label="Last Name"
+                            value={registerFields.lastName}
+                            onChange={(e) => setRegisterFields({...registerFields, lastName: e.target.value})}
+                            error={error.lastNameField ? true : false}
+                            helperText={error.lastNameField}
+                            fullWidth
+                            required 
+                        />
+                        <FormControl fullWidth required>
+                            <InputLabel>Group</InputLabel>
+                            <Select
+                                value={registerFields.group}
+                                label="Group"
+                                onChange={handleSelect}
+                                error={error.groupField ? true : false}
+                            >
+                                <MenuItem value={'seeker'}>Seeker</MenuItem>
+                                <MenuItem value={'employer'}>Employer</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <Typography variant="body1">Already have an account?</Typography>
+                    </>
+                ) : (
                     <>
                         <TextField
                             label="Username"
@@ -92,6 +158,8 @@ const RegisterDialogContent = () => {
                             type="password"
                             value={registerFields.password}
                             onChange={(e) => setRegisterFields({...registerFields, password: e.target.value})}
+                            error={error.passwordField ? true : false}
+                            helperText={error.passwordField}
                             fullWidth
                             required 
                         />
@@ -100,46 +168,11 @@ const RegisterDialogContent = () => {
                             type="password"
                             value={registerFields.confirm}
                             onChange={(e) => setRegisterFields({...registerFields, confirm: e.target.value})}
+                            error={error.confirmField ? true : false}
+                            helperText={error.confirmField}
                             fullWidth
                             required 
                         />
-                        <Typography variant="body1">Already have an account?</Typography>
-                    </>
-                ) : (
-                    <>
-                        <TextField
-                            label="First Name"
-                            value={registerFields.firstName}
-                            onChange={(e) => setRegisterFields({...registerFields, firstName: e.target.value})}
-                            fullWidth
-                            required
-                        />
-                        <TextField
-                            label="Last Name"
-                            value={registerFields.lastName}
-                            onChange={(e) => setRegisterFields({...registerFields, lastName: e.target.value})}
-                            fullWidth
-                            required 
-                        />
-                        <Typography variant="body1" sx={{ textAlign: 'center' }}>Please select either a 'seeker' or an 'employer'</Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                            <GroupIcon>
-                                <IconButton color={registerFields.group === 'seeker' ? 'primary': 'inherit'} 
-                                            onClick={() => setRegisterFields({...registerFields, group: 'seeker'})}
-                                >
-                                    <PersonIcon />
-                                </IconButton>
-                                Seeker
-                            </GroupIcon>
-                            <GroupIcon>
-                                <IconButton color={registerFields.group === 'employer' ? 'primary': 'inherit'} 
-                                            onClick={() => setRegisterFields({...registerFields, group: 'employer'})}
-                                >
-                                    <PersonIcon />
-                                </IconButton>
-                                Employer
-                            </GroupIcon>
-                        </Box>
                     </>
                   )
                 }

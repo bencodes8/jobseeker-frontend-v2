@@ -10,3 +10,7 @@ export const GET = async (request) => {
 
     return NextResponse.json({ data });
 }
+
+export const POST = async (request) => {
+    
+}

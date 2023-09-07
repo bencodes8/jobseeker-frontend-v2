@@ -17,11 +17,11 @@ export const AuthProvider = ({ children }) => {
         const { username_valid, email_valid } = data;
 
         if (!username_valid) {
-            setError({usernameField: 'This username already exists.'});
+            return setError({usernameField: 'This username already exists.'});
         }
 
         if (!email_valid) {
-            setError({emailField: 'This email already exists.'});
+            return setError({emailField: 'This email already exists.'});
         }
 
         if (!username_valid || !email_valid) {
@@ -31,13 +31,27 @@ export const AuthProvider = ({ children }) => {
         return true;
     }
 
+    const createUserAPI = async (username, email, password, group) => {
+        const body = {
+            username: username,
+            email: email,
+            password: password,
+            group: group
+        };
+        
+        const res = await fetch(`${FRONTEND}/api/register`)
+    }
+
     return (
         <AuthContext.Provider value={{ BACKEND, 
                                        loginForm, 
                                        setLoginForm,
                                        error,
                                        setError, 
-                                       usernameEmailValidationAPI }}>
+                                       usernameEmailValidationAPI,
+                                       createUserAPI,
+                                     }}
+        >
             {children}
         </AuthContext.Provider>
     );
