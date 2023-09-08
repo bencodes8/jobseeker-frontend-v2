@@ -23,7 +23,7 @@ const RegisterDialogContent = () => {
             error,
             setError, 
             usernameEmailValidationAPI, 
-            createUserAPI 
+            registerUserAPI
         } = React.useContext(AuthContext);
 
     const steps = ['Name and Position', 'Account Information'];
@@ -48,14 +48,14 @@ const RegisterDialogContent = () => {
 
         if (!firstName) {
             return setError({firstNameField: 'Please fill out this field.'});
-        }
+        } 
 
         if (!lastName) {
             return setError({lastNameField: 'Please fill out this field.'});
         }
 
         if (!group) {
-            return setError({groupField: 'Please select a group.'})
+            return setError({groupField: 'Please select a group.'});
         }
 
         setError({});
@@ -65,7 +65,7 @@ const RegisterDialogContent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { username, email, password, confirm, group } = registerFields;
+        const { username, email, password, confirm, firstName, lastName, group } = registerFields;
 
         // validate if username and email are available
         const valid = await usernameEmailValidationAPI(username, email);
@@ -81,7 +81,7 @@ const RegisterDialogContent = () => {
             }
 
             // register new user
-            createUserAPI(username, email, password, group);
+            registerUserAPI(username, email, password, firstName, lastName, group);
         }
     }
 
@@ -126,8 +126,8 @@ const RegisterDialogContent = () => {
                                 onChange={handleSelect}
                                 error={error.groupField ? true : false}
                             >
-                                <MenuItem value={'seeker'}>Seeker</MenuItem>
-                                <MenuItem value={'employer'}>Employer</MenuItem>
+                                <MenuItem value={'Seeker'}>Seeker</MenuItem>
+                                <MenuItem value={'Employer'}>Employer</MenuItem>
                             </Select>
                         </FormControl>
                         <Typography variant="body1">Already have an account?</Typography>
