@@ -1,5 +1,6 @@
 "use client";
 import * as React from 'react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { 
     Box,
@@ -21,17 +22,16 @@ import { Form } from '../assets/styles/Form';
 import { FormBox } from '../assets/styles/FormBox';
 
 export const Register = () => {
-    const { user,
-            usernameEmailValidationAPI, registerUserAPI, 
-            error, setError,
-            alert, setAlert 
-          } = React.useContext(AuthContext);
-    const router = useRouter();
+    const { push } = useRouter();
 
-    if (user) {
-        router.push('/');
-    }
-
+    const [error, setError] = React.useState({
+        firstNameField: '',
+        lastNameField: '',
+        groupField: '',
+        usernameField: '',
+        emailField: '',
+        pwdField: ''
+    });
     const [step, setStep] = React.useState(0);
     const steps = ['Name and Position', 'Account Information'];
     const [input, setInput] = React.useState({
@@ -52,26 +52,40 @@ export const Register = () => {
 
     const handleNext = () => {
         if (!firstName || !lastName || !group) {
-            return setError({step1: "Please fill out this field."});
+            return setError({
+                firstNameField: !firstName ? 'Please fill out this field' : '',
+                lastNameField: !lastName ? 'Please fill out this field': '',
+                groupField: !group ? 'Please fill out this field': ''
+            });
         }
         setStep(step + 1);
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const payload = {
+            username: username,
+            email: email,
+            password: password,
+            first_name: firstName,
+            last_name: lastName,
+            group: group
+        };
 
-        const valid = await usernameEmailValidationAPI(username, email);
-        if (valid) {
-            if (password !== confirm) {
-                return setError({pwdField: "Passwords do not match."});
-            }
-            
-            const success = await registerUserAPI(username, email, password, firstName, lastName, group);
-            if (success) {
-                setAlert({success: "Sucessfully registered! Please login."});
-                router.push('/login');
-            }
+        const { data: validation } = await axios.get(`http://localhost:3000/api/auth/register?username=${username}&email=${email}`)
+        const { username_valid, email_valid } = validation;
+
+        if (!username_valid || !email_valid || password !== confirm) {
+            return setError({...error, 
+                                usernameField: !username_valid ? 'Username already exists.' : '', 
+                                emailField: !email_valid ? 'Email already exists.' : '',
+                                pwdField: password !== confirm ? 'Passwords do not match' : ''
+                            });
         }
+        
+        const { data } = await axios.post('http://localhost:3000/api/auth/register', payload)
+        const { message: successMessage } = data;
+        push('/login');
     }
 
     return (
@@ -94,8 +108,8 @@ export const Register = () => {
                                 label="First Name"
                                 value={input.firstName}
                                 onChange={(e) => setInput({...input, firstName: e.target.value})}
-                                error={error.step1 ? true : false}
-                                helperText={error.step1}
+                                error={error.firstNameField ? true : false}
+                                helperText={error.firstNameField}
                                 fullWidth
                                 required
                             />
@@ -103,8 +117,8 @@ export const Register = () => {
                                 label="Last Name"
                                 value={input.lastName}
                                 onChange={(e) => setInput({...input, lastName: e.target.value})}
-                                error={error.step1 ? true : false}
-                                helperText={error.step1}
+                                error={error.lastNameField ? true : false}
+                                helperText={error.lastNameField}
                                 fullWidth
                                 required 
                             />
@@ -114,7 +128,7 @@ export const Register = () => {
                                     value={input.group}
                                     label="Group"
                                     onChange={handleSelect}
-                                    error={error.step1 ? true : false}
+                                    error={error.groupField ? true : false}
                                 >
                                     <MenuItem value={'Seeker'}>Seeker</MenuItem>
                                     <MenuItem value={'Employer'}>Employer</MenuItem>

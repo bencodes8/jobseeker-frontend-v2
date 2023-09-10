@@ -1,5 +1,6 @@
 "use client";
 import * as React from 'react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import {
     Alert, 
@@ -12,17 +13,9 @@ import {
 import { Form } from '../assets/styles/Form';
 import { FormBox } from '../assets/styles/FormBox';
 import { NextLink } from '../assets/styles/NextLink';
-import AuthContext from '../context/authcontext';
-
 
 export const Login = () => {
-    const { user, loginUserAPI, alert } = React.useContext(AuthContext);
-    const router = useRouter();
-
-    // if (user) {
-    //     router.push('/');
-    // }
-
+    const { push } = useRouter();
     const [input, setInput] = React.useState({
         username: '',
         password: ''
@@ -31,7 +24,13 @@ export const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await loginUserAPI(username, password)
+        const payload = {
+            username: username,
+            password: password
+        }
+
+        const { data: accessResponse } = await axios.post('http://localhost:3000/api/auth/login', payload)
+        push('/');
     }
 
     return (
@@ -39,11 +38,6 @@ export const Login = () => {
             <Paper elevation={16}>
                 <FormBox sx={{ width: {xs: '100%', sm: 500 }}} onSubmit={handleSubmit}>
                     <Typography variant="h4" sx={{ paddingBottom: 3 }}>Jobseeker</Typography>
-                    { alert && alert.success || alert && alert.error ?
-                        <Alert variant="outlined" severity={alert.success ? "success" : "error"} sx={{ marginTop: 2, marginBottom: 2}}>
-                            {alert.success ? alert.success : alert.error}
-                        </Alert> : null           
-                    }
                     <Typography variant="subtitle1" sx={{ textAlign: 'left', paddingBottom: 1 }}>Login Form</Typography>
                     <Form>
                         <TextField

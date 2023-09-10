@@ -1,3 +1,4 @@
+"use client";
 import * as React from 'react';
 import { 
   Box,
@@ -14,7 +15,7 @@ import {
 
 const Home = async () => {
     const jobQueries = await getJobs();
-
+    
     return (
       <Box sx={{ display: 'flex', 
                 flexDirection: 'column', 

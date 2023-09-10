@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 
 export const GET = async (request) => {
@@ -6,9 +7,7 @@ export const GET = async (request) => {
     const email = searchParams.get('email');
 
     try {
-        const res = await fetch(`http://127.0.0.1:8000/api/register?username=${username}&email=${email}`)
-        const data = await res.json();
-
+        const { data } = await axios.get(`http://127.0.0.1:8000/api/register?username=${username}&email=${email}`)
         return NextResponse.json(data);
         
     } catch (err) {
@@ -18,16 +17,11 @@ export const GET = async (request) => {
 }
 
 export const POST = async (request) => {
-    const body = await request.json();
+    const payload = await request.json();
     
     try {
-        const res = await fetch('http://127.0.0.1:8000/api/register', {
-            method: 'POST',
-            body: JSON.stringify(body)
-        })
-
-        const data = await res.json();
-        return NextResponse.json({ data });
+        const { data } = await axios.post('http://127.0.0.1:8000/api/register', payload)
+        return NextResponse.json(data);
 
     } catch (err) {
         console.error('Registering user API. Maybe the server is offline?');
