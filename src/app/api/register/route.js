@@ -6,7 +6,7 @@ export const GET = async (request) => {
     const email = searchParams.get('email');
 
     try {
-        const res = await fetch(`http://127.0.0.1:8000/api/check-username-email?username=${username}&email=${email}`)
+        const res = await fetch(`http://127.0.0.1:8000/api/register?username=${username}&email=${email}`)
         const data = await res.json();
 
         return NextResponse.json(data);

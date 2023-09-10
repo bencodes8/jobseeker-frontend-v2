@@ -1,15 +1,16 @@
 import * as React from 'react';
 import Link from 'next/link';
+import { Suspense } from 'react';
+import Loading from './loading';
 import {
   AppBar,
   Box,
+  Button,
   Container,
   Toolbar,
   Typography,
-  Button
 } from '@mui/material';
 import { AuthProvider } from './context/authcontext';
-import FormModal from '@/app/components/FormModal/FormModal';
 import HomeIcon from '@mui/icons-material/Home';
 import LoginIcon from '@mui/icons-material/Login';
 import WorkIcon from '@mui/icons-material/Work';
@@ -51,15 +52,21 @@ const RootLayout = ({ children }) => {
                       </Link>
                     ))}
                   </Box>
-                  <FormModal btnName="login" icon={<LoginIcon />} />
+                  <Link href="/login">
+                    <Button variant="outlined">
+                      <LoginIcon />&nbsp;Login
+                    </Button>
+                  </Link>
                 </Toolbar>
               </AppBar>
-              <Container sx={{ height: {xs: 'calc(100vh - 56px)', sm: 'calc(100vh - 4rem)'}, 
-                              marginTop: {xs: '56px', sm: '4rem'}, 
-                            }}
-              >
-                {children}
-              </Container>
+              <Suspense fallback={<Loading />}>
+                <Container sx={{ height: {xs: 'calc(100vh - 56px)', sm: 'calc(100vh - 4rem)'}, 
+                                marginTop: {xs: '56px', sm: '4rem'}, 
+                              }}
+                >
+                  {children}
+                </Container>
+              </Suspense>
             </ThemeRegistry>
           </AuthProvider>
         </body>

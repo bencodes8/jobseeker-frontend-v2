@@ -6,14 +6,14 @@ const AuthContext = React.createContext();
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
-    const BACKEND = "http://127.0.0.1:8000";
     const FRONTEND = "http://localhost:3000";
     const INTERNAL_ERROR = "Unable to connect to server. Please try again later.";
 
+    const [user, setUser] = React.useState(null);
+    const [accessToken, setAccessToken] = React.useState(null);
     const [loginForm, setLoginForm] = React.useState(true);
-    const [alert, setAlert] = React.useState('hello');
+    const [alert, setAlert] = React.useState({});
     const [error, setError] = React.useState({});
-    const [success, setSuccess] = React.useState('');
 
     const usernameEmailValidationAPI = async (username, email) => {
         try {
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
                 confirmField: INTERNAL_ERROR
             });
         }
-    }
+    };
 
     const registerUserAPI = async (username, email, password, firstName, lastName, group) => {      
         const res = await fetch(`${FRONTEND}/api/register`, {
@@ -59,24 +59,37 @@ export const AuthProvider = ({ children }) => {
                 group: group
             })
         })
-        const data = await res.json();
-        const { message: successMessage } = data;
-        setSuccess(successMessage);
+        const { data: successMessage }  = await res.json();
         return successMessage;
-    }
+    };
+
+    const loginUserAPI = async (username, password) => {
+        const res = await fetch(`${FRONTEND}/api/login`, {
+            method: 'POST',
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+
+        if (res.ok) {
+            const { data: accessResponse } = await res.json();
+            console.log(accessResponse.username);
+            console.log(accessResponse.access);
+            setUser(accessResponse.username);
+            setAccessToken(accessResponse.access);
+        } else {
+            const { data: credentialError } = await res.json();            
+            setAlert({ error: credentialError.detail });
+        }
+    };
 
     return (
-        <AuthContext.Provider value={{ BACKEND, 
-                                       loginForm, 
-                                       setLoginForm,
-                                       alert,
-                                       setAlert,
-                                       error,
-                                       setError,
-                                       success,
-                                       setSuccess, 
-                                       usernameEmailValidationAPI,
-                                       registerUserAPI,
+        <AuthContext.Provider value={{ user, setUser, 
+                                       loginForm, setLoginForm,
+                                       alert, setAlert,
+                                       error, setError,
+                                       usernameEmailValidationAPI, registerUserAPI, loginUserAPI
                                      }}
         >
             {children}
