@@ -7,19 +7,10 @@ import useRefreshToken from '@/app/hooks/useRefreshToken';
 const ConnectPage = () => {
     const { user } = React.useContext(AuthContext);
     const refresh = useRefreshToken();
-
-    React.useEffect(() => {
-        const getTokens = async () => {
-            const { data } = await axios.get('http://localhost:3000/api/auth/user')
-            console.log(data);
-        }
-
-        getTokens();    
-    }, []);
+    
     return (
         <>
         <div>Connection Page</div>
-        <button onClick={() => refresh()}>REFRESH TEST</button>
         </>
     )
 }

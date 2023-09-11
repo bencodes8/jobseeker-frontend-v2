@@ -1,7 +1,5 @@
 "use client";
 import * as React from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import {
     Alert, 
     Box,
@@ -13,31 +11,19 @@ import {
 import { Form } from '../../assets/styles/Form';
 import { FormBox } from '../../assets/styles/FormBox';
 import { NextLink } from '../../assets/styles/NextLink';
+import AuthContext from '@/app/context/authcontext';
 
 const Login = () => {
-    const { push } = useRouter();
+    const { loginUser, alert } = React.useContext(AuthContext);
     const [input, setInput] = React.useState({
         username: '',
         password: ''
     });
-    const [alert, setAlert] = React.useState({
-        alert: '',
-        severity: ''
-    });
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const payload = {
-            username: input.username,
-            password: input.password
-        }
-
-        const { data: accessResponse } = await axios.post('http://localhost:3000/api/auth/login', payload)
-        if (accessResponse && accessResponse.username) {
-            push('/connect');
-        } else {
-            setAlert({ alert: accessResponse.detail, severity: 'error' });
-        }
+        const payload = { username: input.username, password: input.password }
+        loginUser(payload);
     }
 
     return (
@@ -45,7 +31,7 @@ const Login = () => {
             <Paper elevation={16}>
                 <FormBox sx={{ width: {xs: '100%', sm: 500 }}} onSubmit={handleSubmit}>
                     <Typography variant="h4" sx={{ paddingBottom: 3 }}>Jobseeker</Typography>
-                    <Alert variant="outlined" severity="error" sx={{ marginBottom: 2, display: alert.alert ? 'in-line' : 'none' }}>
+                    <Alert variant="outlined" severity={alert.severity === 'error' ? 'error' : alert.severity === 'success' ? 'success' : 'info'} sx={{ marginBottom: 2, display: alert.alert ? 'in-line' : 'none' }}>
                         {alert.alert}
                     </Alert>
                     <Typography variant="subtitle1" sx={{ textAlign: 'left', paddingBottom: 1 }}>Login Form</Typography>

@@ -1,18 +1,17 @@
-import * as React from 'react';
+import { cookies } from "next/headers";
 import { axiosPrivate } from "./axiosInstance";
 import useRefreshToken from './useRefreshToken';
-import useAuth from './useAuth';
 
 const useAxiosPrivate = () => {
     const refresh = useRefreshToken();
-    const { user } = useAuth();
+    const cookie = cookies();
+    const accessTokenData = cookie.get('access') || null;
 
     useEffect(() => {
-
         const requestIntercept = axiosPrivate.interceptors.request.use(
             config => {
                 if (!config.headers['Authorization']) {
-                    config.headers['Authorization'] = `Bearer authtokjen`;
+                    config.headers['Authorization'] = `Bearer ${accessTokenData.value}`;
                 }
                 return config
             }, (err) => Promise.reject(err)
@@ -35,7 +34,7 @@ const useAxiosPrivate = () => {
             axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
         }
-    }, [user, refresh]);
+    }, [refresh]);
 
     return axiosPrivate;
 }

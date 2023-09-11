@@ -19,9 +19,11 @@ import {
 import { NextLink } from '../../assets/styles/NextLink';
 import { Form } from '../../assets/styles/Form';
 import { FormBox } from '../../assets/styles/FormBox';
+import AuthContext from '@/app/context/authcontext';
 
 const Register = () => {
     const { push } = useRouter();
+    const { registerUser, setAlert } = React.useContext(AuthContext);
 
     const [error, setError] = React.useState({
         firstNameField: '',
@@ -66,31 +68,28 @@ const Register = () => {
             username: username,
             email: email,
             password: password,
+            confirm: confirm,
             first_name: firstName,
             last_name: lastName,
             group: group
         };
-
-        const { data: validation } = await axios.get(`http://localhost:3000/api/auth/register?username=${username}&email=${email}`)
-        const { username_valid, email_valid } = validation;
-
-        if (!username_valid || !email_valid || password !== confirm) {
-            return setError({...error, 
-                                usernameField: !username_valid ? 'Username already exists.' : '', 
-                                emailField: !email_valid ? 'Email already exists.' : '',
-                                pwdField: password !== confirm ? 'Passwords do not match.' : ''
-                            });
-        }
         
-        const { data } = await axios.post('http://localhost:3000/api/auth/register', payload)
-        const { success: successMessage } = data;
-        if (successMessage) {
+        const { message, cause, success } = await registerUser(payload);
+        
+        if (success && !cause) {
+            setAlert({ alert: message, severity: "success" });
             push('/login');
+        } else {
+            setError({...error, 
+                usernameField: cause === 'username' ? message : '', 
+                emailField: cause === 'email' ? message : '',
+                pwdField: cause === 'password' ? message : ''
+            });
         }
     }
 
     return (
-        <Box sx={{ height: '100%' ,display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Paper elevation={16}>
             <FormBox sx={{ width: {xs: '100%', sm: 500 }}}>
                 <Typography variant="h4" sx={{ paddingBottom: 3 }}>Jobseeker</Typography>

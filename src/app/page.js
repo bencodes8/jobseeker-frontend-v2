@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import AuthContext from './context/authcontext';
 
-export const Home = async () => {
+const Home = async () => {
     const { user } = React.useContext(AuthContext);
     const jobQueries = await getJobs();
     
@@ -26,7 +26,7 @@ export const Home = async () => {
       >
         <Box sx={{ textAlign: 'center', boxSizing: 'border-box', padding: 2 }}>
           <Fade in timeout={2000}>
-            <Typography variant="h4">Welcome {user ? `back ${user?.first_name}!` : 'to Jobseeker'}</Typography>
+            <Typography variant="h4">Welcome {user?.first_name ? `back, ${user?.first_name}!` : 'to Jobseeker'}</Typography>
           </Fade>
           <Fade in style={{ transitionDelay: '500ms' }} timeout={2000}>
             <Typography variant="subtitle1" sx={{ marginTop: 1 }}>Seeking a job? Click on a card for a quick search.</Typography>
