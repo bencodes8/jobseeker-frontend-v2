@@ -7,12 +7,13 @@ export const GET = async (request) => {
     const email = searchParams.get('email');
 
     try {
-        const { data } = await axios.get(`http://127.0.0.1:8000/api/register?username=${username}&email=${email}`)
-        return NextResponse.json(data);
+        const { data: validationResponse } = await axios.get(`http://127.0.0.1:8000/api/register?username=${username}&email=${email}`)
+        return NextResponse.json(validationResponse);
         
     } catch (err) {
-        console.error('Unable to connect to server. Please try again later. Maybe the server is offline?');
-        throw new Error('Unable to connect to server. Please try again later. Maybe the server is offline?');
+        if (err.response) {
+            return NextResponse.json({ error: "Unable to retrieve data from server. Try again."});
+        }
     }
 }
 
@@ -24,7 +25,8 @@ export const POST = async (request) => {
         return NextResponse.json(data);
 
     } catch (err) {
-        console.error('Registering user API. Maybe the server is offline?');
-        throw new Error('Unable to connect to server. Please try again later.');
+        if (err.response) {
+            return NextResponse.json({ error: "Unable to retrieve data from server. Try again."});
+        }
     }
 }

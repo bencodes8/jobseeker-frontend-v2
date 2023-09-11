@@ -10,27 +10,34 @@ import {
     Typography,
     Paper
 } from '@mui/material';
-import { Form } from '../assets/styles/Form';
-import { FormBox } from '../assets/styles/FormBox';
-import { NextLink } from '../assets/styles/NextLink';
+import { Form } from '../../assets/styles/Form';
+import { FormBox } from '../../assets/styles/FormBox';
+import { NextLink } from '../../assets/styles/NextLink';
 
-export const Login = () => {
+const Login = () => {
     const { push } = useRouter();
     const [input, setInput] = React.useState({
         username: '',
         password: ''
     });
-    const { username, password } = input;
+    const [alert, setAlert] = React.useState({
+        alert: '',
+        severity: ''
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
-            username: username,
-            password: password
+            username: input.username,
+            password: input.password
         }
 
         const { data: accessResponse } = await axios.post('http://localhost:3000/api/auth/login', payload)
-        push('/');
+        if (accessResponse && accessResponse.username) {
+            push('/connect');
+        } else {
+            setAlert({ alert: accessResponse.detail, severity: 'error' });
+        }
     }
 
     return (
@@ -38,6 +45,9 @@ export const Login = () => {
             <Paper elevation={16}>
                 <FormBox sx={{ width: {xs: '100%', sm: 500 }}} onSubmit={handleSubmit}>
                     <Typography variant="h4" sx={{ paddingBottom: 3 }}>Jobseeker</Typography>
+                    <Alert variant="outlined" severity="error" sx={{ marginBottom: 2, display: alert.alert ? 'in-line' : 'none' }}>
+                        {alert.alert}
+                    </Alert>
                     <Typography variant="subtitle1" sx={{ textAlign: 'left', paddingBottom: 1 }}>Login Form</Typography>
                     <Form>
                         <TextField

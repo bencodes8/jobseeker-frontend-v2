@@ -1,28 +1,10 @@
 import * as React from 'react';
-import Link from 'next/link';
 import { Suspense } from 'react';
 import Loading from './loading';
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import Navbar from './components/Navbar/Navbar';
+import { Container } from '@mui/material';
 import { AuthProvider } from './context/authcontext';
-import HomeIcon from '@mui/icons-material/Home';
-import LoginIcon from '@mui/icons-material/Login';
-import WorkIcon from '@mui/icons-material/Work';
-import GroupsIcon from '@mui/icons-material/Groups';
 import ThemeRegistry from './components/ThemeRegistry/ThemeRegistry';
-
-
-const pages = [
-  {title: 'Home', icon: <HomeIcon />, href: "/"},
-  {title: 'Seek Jobs', icon: <WorkIcon />, href: "/jobs" },
-  {title: 'Connect', icon: <GroupsIcon />, href: "/connect" }
-];
 
 export const metadata = {
   title: 'Jobseeker',
@@ -35,31 +17,8 @@ const RootLayout = ({ children }) => {
         <body>
           <AuthProvider>
             <ThemeRegistry>
-              <AppBar position="fixed" sx={{ zIndex: 2000 }}>
-                <Toolbar>
-                  <Typography variant="h6" component="div" sx={{ letterSpacing: 1.5 }}>
-                    Jobseeker
-                  </Typography>
-                  <Box sx={{ flexGrow: 1, 
-                            display: {xs: 'none', md: 'flex' }, 
-                            justifyContent: 'flex-end', 
-                            marginRight: 2.5 
-                          }}
-                  >
-                    {pages.map((page) => (
-                      <Link key={page.title} href={page.href}>
-                        <Button sx={{ letterSpacing: 1.5, marginRight: 1, color: 'white' }}>{page.icon}&nbsp;{page.title}</Button>
-                      </Link>
-                    ))}
-                  </Box>
-                  <Link href="/login">
-                    <Button variant="outlined">
-                      <LoginIcon />&nbsp;Login
-                    </Button>
-                  </Link>
-                </Toolbar>
-              </AppBar>
               <Suspense fallback={<Loading />}>
+                <Navbar />
                 <Container sx={{ height: {xs: 'calc(100vh - 56px)', sm: 'calc(100vh - 4rem)'}, 
                                 marginTop: {xs: '56px', sm: '4rem'}, 
                               }}

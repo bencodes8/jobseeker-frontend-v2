@@ -16,12 +16,11 @@ import {
     Typography,
     Paper
 } from '@mui/material';
-import AuthContext from '../context/authcontext';
-import { NextLink } from '../assets/styles/NextLink';
-import { Form } from '../assets/styles/Form';
-import { FormBox } from '../assets/styles/FormBox';
+import { NextLink } from '../../assets/styles/NextLink';
+import { Form } from '../../assets/styles/Form';
+import { FormBox } from '../../assets/styles/FormBox';
 
-export const Register = () => {
+const Register = () => {
     const { push } = useRouter();
 
     const [error, setError] = React.useState({
@@ -52,10 +51,10 @@ export const Register = () => {
 
     const handleNext = () => {
         if (!firstName || !lastName || !group) {
-            return setError({
-                firstNameField: !firstName ? 'Please fill out this field' : '',
-                lastNameField: !lastName ? 'Please fill out this field': '',
-                groupField: !group ? 'Please fill out this field': ''
+            return setError({...error,
+                firstNameField: !firstName ? 'Please fill out this field.' : '',
+                lastNameField: !lastName ? 'Please fill out this field.' : '',
+                groupField: !group ? 'Please fill out this field.' : ''
             });
         }
         setStep(step + 1);
@@ -79,13 +78,15 @@ export const Register = () => {
             return setError({...error, 
                                 usernameField: !username_valid ? 'Username already exists.' : '', 
                                 emailField: !email_valid ? 'Email already exists.' : '',
-                                pwdField: password !== confirm ? 'Passwords do not match' : ''
+                                pwdField: password !== confirm ? 'Passwords do not match.' : ''
                             });
         }
         
         const { data } = await axios.post('http://localhost:3000/api/auth/register', payload)
-        const { message: successMessage } = data;
-        push('/login');
+        const { success: successMessage } = data;
+        if (successMessage) {
+            push('/login');
+        }
     }
 
     return (
