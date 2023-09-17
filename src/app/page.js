@@ -1,7 +1,8 @@
-"use client";
+'use client';
 import * as React from 'react';
 import { 
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -12,11 +13,30 @@ import {
   Typography,
   Zoom
 } from '@mui/material';
+import { BACKEND_URL } from './utils/constants';
 import AuthContext from './context/authcontext';
 
-const Home = async () => {
-    const { user } = React.useContext(AuthContext);
-    const jobQueries = await getJobs();
+const Home = () => {
+  const { user } = React.useContext(AuthContext);
+  const [jobQueries, setJobQueries] = React.useState([]); // Initialize jobQueries as an empty array
+
+  const getJobs = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/index`, { cache: 'force-cache' });
+      if (res.ok) {
+        const data = await res.json();
+        setJobQueries(data); // Update jobQueries with the fetched data
+      } else {
+        console.error('Failed to fetch data');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  React.useEffect(() => {
+    getJobs();
+  }, []);
     
     return (
       <Box sx={{ display: 'flex', 
@@ -59,22 +79,5 @@ const Home = async () => {
       </Box>
     );
 }
-
-const getJobs = async () => {
-    try {
-      const res = await fetch('http://127.0.0.1:8000/api/index', { cache: 'force-cache' })
-
-      if (!res.ok) {
-        throw new Error('Fetch failed with non-OK status');
-      }
-
-      return res.json();
-
-    } catch (error) {
-      console.error('Fetch error:', error);
-      return undefined; 
-    }
-};
-
 
 export default Home;

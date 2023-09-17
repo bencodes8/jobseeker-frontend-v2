@@ -1,24 +1,27 @@
-import axios from 'axios';
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { BACKEND_URL } from '@/app/utils/constants';
+import { cookies } from "next/headers";
+import { BACKEND_URL } from "@/app/utils/constants";
+import { NextResponse } from "next/server";
+
 
 export const POST = async (request) => {
-    const cookie = new cookies();
-    const body = await request.json();
+    const cookie = cookies();
+    const payload = await request.json();
 
-    try {
-        const { data: tokenResponse } = await axios.post(`${BACKEND_URL}/api/token/pair`, body)
+    const res = await fetch(`${BACKEND_URL}/api/token/pair`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
 
-        if (tokenResponse && tokenResponse.access && tokenResponse.refresh) {
-            const { access, refresh } = tokenResponse;
-            cookie.set({ name: 'refresh', value: refresh, httpOnly: true, secure: true, path: '/' });
-            cookie.set({ name: 'access', value: access, httpOnly: true, secure: true, path: '/' });
-    
-            return NextResponse.json(tokenResponse);
-        }   
-    } catch (error) {
-        const invalidUserResponse = error.response.data;
-        return NextResponse.json(invalidUserResponse);
+    const loginResponse = await res.json();
+
+    if (loginResponse && loginResponse.access && loginResponse.refresh) {
+        cookie.set({ name: 'refresh', value: loginResponse.refresh, httpOnly: true, secure: true, path: '/'});
+        return NextResponse.json({ access: loginResponse.access });
     }
+
+    return NextResponse({ detail: 'Something went wrong' })
+
 }

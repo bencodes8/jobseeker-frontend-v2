@@ -1,16 +1,18 @@
-"use client";
+'use client';
 import * as React from 'react';
 import axios from 'axios';
+import { FRONTEND_URL } from '@/app/utils/constants';
 import AuthContext from '../../context/authcontext';
-import useRefreshToken from '@/app/hooks/useRefreshToken';
 
 const ConnectPage = () => {
     const { user } = React.useContext(AuthContext);
-    const refresh = useRefreshToken();
     
     return (
         <>
-        <div>Connection Page</div>
+            <div>Connection Page</div>
+            <div>
+                { user ? user.username : 'Not authenticated' }
+            </div>
         </>
     )
 }

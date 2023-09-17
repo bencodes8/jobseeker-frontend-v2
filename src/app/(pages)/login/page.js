@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import * as React from 'react';
 import {
     Alert, 
@@ -29,13 +29,13 @@ const Login = () => {
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Paper elevation={16}>
-                <FormBox sx={{ width: {xs: '100%', sm: 500 }}} onSubmit={handleSubmit}>
+                <FormBox sx={{ width: {xs: '100%', sm: 500 }}}>
                     <Typography variant="h4" sx={{ paddingBottom: 3 }}>Jobseeker</Typography>
                     <Alert variant="outlined" severity={alert.severity === 'error' ? 'error' : alert.severity === 'success' ? 'success' : 'info'} sx={{ marginBottom: 2, display: alert.alert ? 'in-line' : 'none' }}>
                         {alert.alert}
                     </Alert>
                     <Typography variant="subtitle1" sx={{ textAlign: 'left', paddingBottom: 1 }}>Login Form</Typography>
-                    <Form>
+                    <Form onSubmit={handleSubmit}>
                         <TextField
                             label="Username"
                             value={input.username}

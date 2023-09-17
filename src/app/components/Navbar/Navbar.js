@@ -15,7 +15,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AuthContext from '@/app/context/authcontext';
 
-export const Navbar = () => {
+const Navbar = () => {
     const PAGES = [
         {title: 'Home', icon: <HomeIcon />, href: "/"},
         {title: 'Seek Jobs', icon: <WorkIcon />, href: "/jobs" },

@@ -16,9 +16,9 @@ import {
     Typography,
     Paper
 } from '@mui/material';
-import { NextLink } from '../../assets/styles/NextLink';
-import { Form } from '../../assets/styles/Form';
-import { FormBox } from '../../assets/styles/FormBox';
+import { NextLink } from '@/app/assets/styles/NextLink';
+import { Form } from '@/app/assets/styles/Form';
+import { FormBox } from '@/app/assets/styles/FormBox';
 import AuthContext from '@/app/context/authcontext';
 
 const Register = () => {
@@ -45,18 +45,16 @@ const Register = () => {
         group: ''
     });
 
-    const { firstName, lastName, username, email, password, confirm, group } = input;
-
     const handleSelect = (e) => {
         setInput({...input, group: e.target.value});
     };
 
     const handleNext = () => {
-        if (!firstName || !lastName || !group) {
+        if (!input.firstName || !input.lastName || !input.group) {
             return setError({...error,
-                firstNameField: !firstName ? 'Please fill out this field.' : '',
-                lastNameField: !lastName ? 'Please fill out this field.' : '',
-                groupField: !group ? 'Please fill out this field.' : ''
+                firstNameField: !input?.firstName ? 'Please fill out this field.' : '',
+                lastNameField: !input?.lastName ? 'Please fill out this field.' : '',
+                groupField: !input?.group ? 'Please fill out this field.' : ''
             });
         }
         setStep(step + 1);
@@ -65,13 +63,13 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
-            username: username,
-            email: email,
-            password: password,
-            confirm: confirm,
-            first_name: firstName,
-            last_name: lastName,
-            group: group
+            username: input.username,
+            email: input.email,
+            password: input.password,
+            confirm: input.confirm,
+            first_name: input.firstName,
+            last_name: input.lastName,
+            group: input.group
         };
         
         const { message, cause, success } = await registerUser(payload);

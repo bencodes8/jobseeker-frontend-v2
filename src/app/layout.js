@@ -1,6 +1,5 @@
+'use client';
 import * as React from 'react';
-import { Suspense } from 'react';
-import Loading from './loading';
 import Navbar from './components/Navbar/Navbar';
 import { Container } from '@mui/material';
 import { AuthProvider } from './context/authcontext';
@@ -17,15 +16,13 @@ const RootLayout = ({ children }) => {
         <body>
           <AuthProvider>
             <ThemeRegistry>
-              <Suspense fallback={<Loading />}>
-                <Navbar />
+              <Navbar />
                 <Container sx={{ height: {xs: 'calc(100vh - 56px)', sm: 'calc(100vh - 4rem)'}, 
                                 marginTop: {xs: '56px', sm: '4rem'}, 
                               }}
                 >
                   {children}
                 </Container>
-              </Suspense>
             </ThemeRegistry>
           </AuthProvider>
         </body>
